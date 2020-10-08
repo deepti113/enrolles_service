@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.enrolle.enrolles_service.Exceptions.ResourceNotFoundException;
+import com.enrolle.enrolles_service.constants.ApplicationConstants;
 import com.enrolle.enrolles_service.domain.Response;
 import com.enrolle.enrolles_service.domain.User;
 import com.enrolle.enrolles_service.repository.UserRepository;
@@ -18,9 +19,9 @@ public class UserService {
 	@Autowired
 	UserRepository userRepository;
 
-	public Long saveOrUpdate(User user) {
+	public User save(User user) {
 		User saveObj = userRepository.save(user);
-		return saveObj.getId();
+		return saveObj;
 	}
 
 	public User update(User newUser, Long id) {
@@ -41,7 +42,7 @@ public class UserService {
 			userRepository.deleteById(id);
 			return true;
 		} else {
-			return new ResourceNotFoundException("User with id" + id + "not Found");
+			return new ResourceNotFoundException(ApplicationConstants.USER_NOT_FOUND + id);
 		}
 
 	}
@@ -55,7 +56,7 @@ public class UserService {
 		if (user.isPresent()) {
 			return user.get();
 		} else {
-			return new ResourceNotFoundException("User with id" + id + "not Found");
+			return new ResourceNotFoundException(ApplicationConstants.USER_NOT_FOUND + id);
 		}
 
 	}

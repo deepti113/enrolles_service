@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.enrolle.enrolles_service.Exceptions.ResourceNotFoundException;
+import com.enrolle.enrolles_service.constants.ApplicationConstants;
 import com.enrolle.enrolles_service.domain.Dependent;
 import com.enrolle.enrolles_service.domain.User;
 import com.enrolle.enrolles_service.repository.DependentRepository;
@@ -27,27 +28,30 @@ public class DependentService {
 	public Object saveDependents(Long userId, Dependent dependent) {
 		Optional<User> user = userRepository.findById(userId);
 		if (user.isPresent()) {
-			user.map(usr -> {
-				dependent.setUser(usr);
-				return dependentRepository.save(dependent);
-			});
+			dependent.setUser(user.get());
+			return dependentRepository.save(dependent);
 		}
-		return new ResourceNotFoundException("Dependent not found for user id " + userId);
+		return new ResourceNotFoundException(ApplicationConstants.DEPENDENT_NOT_FOUND_FOR_USER + userId);
 	}
 
-	public Dependent update(Long userId, Dependent newDependent) {
-		return dependentRepository.findById(userId).map(dependent -> {
+	public Object updateDependent(Long userId, Dependent newDependent, Long dependentId) {
+		if (!userRepository.existsById(userId)) {
+			throw new ResourceNotFoundException(ApplicationConstants.USER_NOT_FOUND);
+		}
+		return dependentRepository.findById(dependentId).map(dependent -> {
 			dependent.setName(newDependent.getName());
 			dependent.setDateOfBirth(newDependent.getDateOfBirth());
 			return dependentRepository.save(dependent);
-		}).orElseGet(() -> {
-			newDependent.setId(userId);
-			return dependentRepository.save(newDependent);
-		});
+		}).orElseThrow(() -> new ResourceNotFoundException(ApplicationConstants.DEPENDENT_NOT_FOUND));
 	}
 
-	public void delete(Long id) {
-		dependentRepository.deleteById(id);
+	public Object delete(Long userId, Long dependentId) {
+		Optional<Dependent> dependent = dependentRepository.findByIdAndUserId(dependentId, userId);
+		if (dependent.isPresent()) {
+			dependentRepository.deleteById(dependentId);
+			return true;
+		}
+		return new ResourceNotFoundException(ApplicationConstants.DEPENDENT_NOT_FOUND + dependentId);
 	}
 
 	public Object getDependentById(Long Id) {
@@ -55,7 +59,7 @@ public class DependentService {
 		if (dependent.isPresent()) {
 			return dependent.get();
 		} else {
-			return new ResourceNotFoundException("Dependent with id" + Id + "not Found");
+			return new ResourceNotFoundException(ApplicationConstants.DEPENDENT_NOT_FOUND + Id);
 		}
 
 	}

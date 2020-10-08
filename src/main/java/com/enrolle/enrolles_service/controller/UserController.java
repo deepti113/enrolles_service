@@ -18,8 +18,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.enrolle.enrolles_service.constants.ApplicationConstants;
+import com.enrolle.enrolles_service.domain.Dependent;
 import com.enrolle.enrolles_service.domain.Response;
 import com.enrolle.enrolles_service.domain.User;
+import com.enrolle.enrolles_service.service.DependentService;
 import com.enrolle.enrolles_service.service.UserService;
 
 @RequestMapping("enrolles")
@@ -27,6 +30,8 @@ import com.enrolle.enrolles_service.service.UserService;
 public class UserController {
 	@Autowired
 	UserService userService;
+	@Autowired
+	DependentService dependentService;
 
 	private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
@@ -35,22 +40,31 @@ public class UserController {
 	public Response getAllUsers() {
 		List<User> users = userService.getAllUsers();
 		if (CollectionUtils.isEmpty(users)) {
-			return new Response(HttpStatus.NO_CONTENT.value(), "Users details not available");
+			return new Response(HttpStatus.NO_CONTENT.value(), ApplicationConstants.USERS_NOT_FOUND);
 		}
-		return new Response(HttpStatus.OK.value(), "Sucess", users);
+		return new Response(HttpStatus.OK.value(), ApplicationConstants.SUCCESS, users);
 	}
 
 	/**/
 	@PostMapping(value = "/addUser")
 	public Response saveUser(@Valid @RequestBody User user) {
-		Long userId;
+		User savedUser;
 		if (null != user) {
-			userId = userService.saveOrUpdate(user);
+			savedUser = userService.save(user);
 		} else {
 			logger.info("User details are not available");
-			return new Response(HttpStatus.NO_CONTENT.value(), "user details not available");
+			return new Response(HttpStatus.NO_CONTENT.value(), ApplicationConstants.USERS_NOT_FOUND);
 		}
-		return new Response(HttpStatus.OK.value(), "user saved sucessfully with Id: " + userId);
+		return new Response(HttpStatus.OK.value(), ApplicationConstants.USER_SAVED + savedUser.getId());
+	}
+
+	@PutMapping("user/{id}")
+	private Response update(@Valid @RequestBody User user, @PathVariable Long id) {
+		User updatedUser = userService.update(user, id);
+		if (null != updatedUser) {
+			return new Response(HttpStatus.OK.value(), ApplicationConstants.SUCCESS, updatedUser);
+		}
+		return new Response(HttpStatus.NOT_FOUND.value(), ApplicationConstants.USER_NOT_FOUND, updatedUser);
 	}
 
 	/* Get User by Id */
@@ -58,28 +72,19 @@ public class UserController {
 	private Response getUser(@PathVariable("userId") Long userId) {
 		Object obj = userService.getUserById(userId);
 		if (obj instanceof User) {
-			return new Response(HttpStatus.OK.value(), "", obj);
+			return new Response(HttpStatus.OK.value(), ApplicationConstants.SUCCESS, obj);
 		} else {
-			return new Response(HttpStatus.NOT_FOUND.value(), "", obj);
+			return new Response(HttpStatus.NOT_FOUND.value(), ApplicationConstants.ERROR, obj);
 		}
-	}
-
-	@PutMapping("user/{id}")
-	private Response update(@Valid @RequestBody User user, @PathVariable Long id) {
-		User updatedUser = userService.update(user, id);
-		if (null != updatedUser) {
-			return new Response(HttpStatus.OK.value(), "", updatedUser);
-		}
-		return new Response(HttpStatus.NOT_FOUND.value(), "", updatedUser);
 	}
 
 	@DeleteMapping("delete/{userId}")
 	private Response deleteUser(@PathVariable("userId") Long userId) {
 		Object obj = userService.delete(userId);
 		if (obj == Boolean.TRUE) {
-			return new Response(HttpStatus.OK.value(), "Success");
+			return new Response(HttpStatus.OK.value(), ApplicationConstants.SUCCESS);
 		}
-		return new Response(HttpStatus.NOT_FOUND.value(), "User cannot be deleted with id:" + userId, userId);
+		return new Response(HttpStatus.NOT_FOUND.value(), ApplicationConstants.USER_DELETE_FAILURE + userId, userId);
 	}
 
 }
