@@ -4,8 +4,6 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.CollectionUtils;
@@ -19,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.enrolle.enrolles_service.constants.ApplicationConstants;
-import com.enrolle.enrolles_service.domain.Dependent;
 import com.enrolle.enrolles_service.domain.Response;
 import com.enrolle.enrolles_service.domain.User;
 import com.enrolle.enrolles_service.service.DependentService;
@@ -69,7 +66,7 @@ public class UserController {
 	private Response getUser(@PathVariable("userId") Long userId) {
 		Object obj = userService.getUserById(userId);
 		if (obj instanceof User) {
-			return new Response(HttpStatus.OK.value(), ApplicationConstants.SUCCESS, obj);
+			return new Response(HttpStatus.OK.value(), ApplicationConstants.USER_RETRIEVE_SUCCESS, obj);
 		} else {
 			return new Response(HttpStatus.NOT_FOUND.value(), ApplicationConstants.ERROR, obj);
 		}
@@ -79,7 +76,7 @@ public class UserController {
 	private Response deleteUser(@PathVariable("userId") Long userId) {
 		Object obj = userService.delete(userId);
 		if (obj == Boolean.TRUE) {
-			return new Response(HttpStatus.OK.value(), ApplicationConstants.SUCCESS);
+			return new Response(HttpStatus.OK.value(), ApplicationConstants.USER_DELETE_SUCCESS);
 		}
 		return new Response(HttpStatus.NOT_FOUND.value(), ApplicationConstants.USER_DELETE_FAILURE + userId, userId);
 	}

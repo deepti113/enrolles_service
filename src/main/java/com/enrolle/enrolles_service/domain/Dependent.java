@@ -18,7 +18,7 @@ import org.hibernate.annotations.OnDeleteAction;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name = "a_dependent")
+@Table(name = "dependent")
 public class Dependent implements Serializable {
 	/**
 	 * 
