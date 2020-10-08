@@ -33,9 +33,7 @@ public class UserController {
 	@Autowired
 	DependentService dependentService;
 
-	private static final Logger logger = LoggerFactory.getLogger(UserController.class);
-
-	/* Return all User */
+	/* To get all User */
 	@GetMapping("/users")
 	public Response getAllUsers() {
 		List<User> users = userService.getAllUsers();
@@ -52,7 +50,6 @@ public class UserController {
 		if (null != user) {
 			savedUser = userService.save(user);
 		} else {
-			logger.info("User details are not available");
 			return new Response(HttpStatus.NO_CONTENT.value(), ApplicationConstants.USERS_NOT_FOUND);
 		}
 		return new Response(HttpStatus.OK.value(), ApplicationConstants.USER_SAVED + savedUser.getId());

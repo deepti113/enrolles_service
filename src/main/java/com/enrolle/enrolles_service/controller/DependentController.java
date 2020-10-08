@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.enrolle.enrolles_service.constants.ApplicationConstants;
 import com.enrolle.enrolles_service.domain.Dependent;
 import com.enrolle.enrolles_service.domain.Response;
-import com.enrolle.enrolles_service.domain.User;
 import com.enrolle.enrolles_service.service.DependentService;
 import com.enrolle.enrolles_service.service.UserService;
 
@@ -34,7 +33,6 @@ public class DependentController {
 	@Autowired
 	UserService userService;
 
-	private static final Logger logger = LoggerFactory.getLogger(DependentController.class);
 
 	@GetMapping(value = "/{userId}/dependents")
 	public List<Dependent> getDependentsByUser(@PathVariable(value = "userId") Long userId) {

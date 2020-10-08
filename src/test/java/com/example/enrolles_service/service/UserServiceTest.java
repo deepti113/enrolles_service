@@ -62,7 +62,10 @@ public class UserServiceTest {
 
 	@Test
 	public void testGetUserById() {
-		Object savedUser = userService.getUserById(new Long(1));
+		Object user = userService.getUserById(new Long(1));
 		assertNotNull(user);
+		if (user instanceof User) {
+			assertEquals(user, ((User) user).getName());
+		}
 	}
 }
