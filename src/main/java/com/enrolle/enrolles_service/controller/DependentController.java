@@ -24,6 +24,9 @@ import com.enrolle.enrolles_service.domain.Response;
 import com.enrolle.enrolles_service.service.DependentService;
 import com.enrolle.enrolles_service.service.UserService;
 
+import io.swagger.annotations.Api;
+
+@Api
 @RequestMapping("enrolles/user")
 @RestController
 public class DependentController {
