@@ -1,0 +1,25 @@
+spring:
+    jpa:
+      hibernate:
+        ddl-auto: update
+      database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+      generate-ddl: true
+      show-sql: true
+    datasource:
+         url: jdbc:mysql://localhost:3306/enrolle?useSSL=false
+         username: root
+         password: root        
+    security:
+      user:
+        name: enrolle
+        password: password  
+      oauth2:
+         client:
+           registration:
+              github:
+                 client-id: 9c7089c4f7f74863cfc0
+                 client-secret: 7c8df609b9f73a48c4077e73f498190523a3f7f0
+springfox:
+  documentation:
+    swagger-ui:
+      enabled: true
